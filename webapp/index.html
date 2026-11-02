@@ -77,6 +77,7 @@ Object.assign(T.ru,{help:'Помощь',helpDesc:'Есть вопросы? Св�
 Object.assign(T.en,{help:'Help',helpDesc:'Questions? Get in touch.',helpAdmins:'Admins',helpChannels:'Channels',helpSupport:'Support',helpNone:'No contacts added yet',open:'Open',subTitle:'Subscribe to our channels',subDesc:'Subscribe to the channels below to use the shop.',subCheck:'Check',subNo:'You have not subscribed to all channels yet',maint:'Maintenance in progress. Please come back soon.',blocked:'Your account is blocked.'});
 Object.assign(T.ru,{e_unauthorized:'Доступ запрещён. Откройте Mini App через Telegram.',e_blocked:'Аккаунт заблокирован.',e_forbidden:'Нет доступа.',e_sub_required:'Сначала подпишитесь на каналы.',e_maintenance:'Идут технические работы.',e_rate_limited:'Слишком много запросов. Подождите немного.',e_insufficient_balance:'Недостаточно средств на балансе.',e_username_required:'Сначала укажите username в настройках Telegram.',e_invalid_input:'Проверьте введённые данные.',e_limit_reached:'У вас уже 3 ожидающие заявки.',e_conflict:'Действие уже выполнено.',e_not_found:'Не найдено.',e_server_error:'Ошибка сервера. Попробуйте позже.'});
 Object.assign(T.en,{e_unauthorized:'Access denied. Open the Mini App from Telegram.',e_blocked:'Your account is blocked.',e_forbidden:'No access.',e_sub_required:'Please subscribe to the channels first.',e_maintenance:'Maintenance in progress.',e_rate_limited:'Too many requests. Please wait a moment.',e_insufficient_balance:'Insufficient balance.',e_username_required:'Set a username in Telegram settings first.',e_invalid_input:'Please check the entered data.',e_limit_reached:'You already have 3 pending requests.',e_conflict:'This action is already done.',e_not_found:'Not found.',e_forbidden:'No access.',e_server_error:'Server error. Please try again later.'});
+const H={};
 let S={lang:'uz',me:null,cfg:null},V={kind:'stars',qty:100,price:0,who:'self',user:'',prem:12,otab:'o',amt:0};
 const t=k=>(T[S.lang]||{})[k]||T.uz[k]||k;
 const money=c=>'$'+(c/100).toFixed(2),grp=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' '),uzs=n=>grp(n)+' '+t('som');
@@ -231,7 +232,7 @@ function est(){const a=+(document.getElementById('am')?.value||0),el=document.ge
  el.textContent=a?`${t('will')}: ≈ ${money(Math.floor(a*100/S.cfg.usd_rate))} (${t('rate')}: $1 = ${uzs(S.cfg.usd_rate)})`:''}
 function shrink(f){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>{const k=Math.min(1,1600/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=i.width*k;c.height=i.height*k;c.getContext('2d').drawImage(i,0,0,c.width,c.height);c.toBlob(res,'image/jpeg',.85)};i.onerror=rej;i.src=URL.createObjectURL(f)})}
 const go=p=>{location.hash='#/'+p};
-const H={stars:()=>go('stars'),premium:()=>go('premium'),orders:()=>go('orders'),profile:()=>go('profile'),topup:()=>go('topup'),
+Object.assign(H,{stars:()=>go('stars'),premium:()=>go('premium'),orders:()=>go('orders'),profile:()=>go('profile'),topup:()=>go('topup'),
  who:d=>{V.who=d.v;render()},otab:d=>{V.otab=d.v;render()},
  pack:d=>{V.qty=+d.q;document.getElementById('qty').value=V.qty;document.querySelectorAll('.pill[data-a=pack]').forEach(p=>p.classList.toggle('on',p.dataset.q===d.q));quote()},
  prem:d=>{V.qty=+d.q;render()},amt:d=>{document.getElementById('am').value=d.v;est()},
@@ -241,7 +242,7 @@ const H={stars:()=>go('stars'),premium:()=>go('premium'),orders:()=>go('orders')
  send:async()=>{const f=document.getElementById('rc').files[0],a=+document.getElementById('am').value;if(!f)return toast(t('pickf'),1);
   const b=document.querySelector('.cta[data-a=send]');b.disabled=true;b.setAttribute('aria-busy','true');
   try{const fd=new FormData();fd.append('amount',a);fd.append('receipt',await shrink(f),'receipt.jpg');await api('/api/topups',{method:'POST',body:fd});V.amt=0;toast(t('okTop'));V.otab='t';go('orders')}
-  catch(e){toast(e.message,1);b.disabled=false;b.removeAttribute('aria-busy')}}};
+  catch(e){toast(e.message,1);b.disabled=false;b.removeAttribute('aria-busy')}}});
 document.addEventListener('click',e=>{const a=e.target.closest('[data-a]');if(a&&H[a.dataset.a])H[a.dataset.a](a.dataset)});
 document.addEventListener('input',e=>{const i=e.target;
  if(i.id==='qty'){V.qty=parseInt(i.value)||0;document.querySelectorAll('.pill[data-a=pack]').forEach(p=>p.classList.toggle('on',+p.dataset.q===V.qty));clearTimeout(V.qt);V.qt=setTimeout(quote,250)}
